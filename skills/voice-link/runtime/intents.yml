@@ -1,0 +1,217 @@
+# Voice-Link Intent Definitions
+# Pattern-based command matching — no AI, just fast string matching
+# ~30 commands for field operations
+
+intents:
+  # ─── Contrôle direct ───────────────────────────────
+  - id: stop
+    patterns:
+      - "stop"
+      - "stop le robot"
+      - "stop le drone"
+      - "arrête"
+      - "arrête tout"
+      - "halt"
+    action: emergency_stop
+    confirm: false
+    response: "Arrêt d'urgence"
+
+  - id: go
+    patterns:
+      - "go"
+      - "avance"
+      - "continue"
+      - "reprends"
+      - "c'est bon"
+    action: resume
+    response: "Reprise"
+
+  - id: return_home
+    patterns:
+      - "rentre"
+      - "retour base"
+      - "reviens"
+      - "retour"
+      - "go home"
+    action: return_home
+    response: "Retour base"
+
+  - id: land
+    patterns:
+      - "atterris"
+      - "pose-toi"
+      - "land"
+      - "descends"
+    target_type: drone
+    action: land
+    response: "Atterrissage"
+
+  - id: takeoff
+    patterns:
+      - "décolle"
+      - "takeoff"
+      - "envole"
+    target_type: drone
+    action: takeoff
+    confirm: true
+    response: "Décollage confirmé"
+
+  # ─── Requêtes d'info ──────────────────────────────
+  - id: battery
+    patterns:
+      - "batterie"
+      - "niveau batterie"
+      - "combien de batterie"
+      - "battery"
+      - "autonomie"
+    action: query_battery
+    response_template: "{entity} : batterie {battery} pourcent"
+
+  - id: position
+    patterns:
+      - "position"
+      - "où est"
+      - "localise"
+      - "où il est"
+      - "where"
+    action: query_position
+    response_template: "{entity} : zone {zone}"
+
+  - id: status
+    patterns:
+      - "status"
+      - "état"
+      - "ça va"
+      - "comment ça va"
+      - "rapport"
+    action: query_status
+    response_template: "{count} entités en ligne, {alerts} alertes"
+
+  # ─── Missions ─────────────────────────────────────
+  - id: start_mission
+    patterns:
+      - "lance la mission"
+      - "démarre le scan"
+      - "start mission"
+      - "commence le relevé"
+    action: start_mission
+    confirm: true
+    response: "Mission lancée"
+
+  - id: abort_mission
+    patterns:
+      - "annule la mission"
+      - "abort"
+      - "stop mission"
+      - "arrête la mission"
+    action: abort_mission
+    confirm: true
+    response: "Mission annulée"
+
+  # ─── Geofence ─────────────────────────────────────
+  - id: extend_zone
+    patterns:
+      - "étends la zone"
+      - "agrandis le périmètre"
+      - "plus grand"
+    action: extend_geofence
+    confirm: true
+    response: "Zone étendue"
+
+  - id: lock_zone
+    patterns:
+      - "verrouille la zone"
+      - "lock"
+      - "bloque le périmètre"
+    action: lock_geofence
+    response: "Zone verrouillée"
+
+  # ─── Micro-UI ─────────────────────────────────────
+  - id: show_map
+    patterns:
+      - "montre la carte"
+      - "affiche la carte"
+      - "ouvre la carte"
+      - "show map"
+    action: spawn_panel
+    panel: fleet-map
+    response: "Carte affichée"
+
+  - id: show_config
+    patterns:
+      - "ouvre la config"
+      - "configuration"
+      - "paramètres"
+    action: spawn_panel
+    panel: gateway-config
+    response: "Config ouverte"
+
+  # ─── Confirmation / Annulation ────────────────────
+  - id: confirm_yes
+    patterns:
+      - "oui"
+      - "confirme"
+      - "yes"
+      - "ok"
+      - "affirmatif"
+      - "go"
+    action: confirm
+    internal: true
+
+  - id: confirm_no
+    patterns:
+      - "non"
+      - "annule"
+      - "no"
+      - "cancel"
+      - "négatif"
+    action: cancel
+    internal: true
+
+  # ─── LiDAR drone spécifique ──────────────────────
+  - id: start_scan
+    patterns:
+      - "lance le scan"
+      - "démarre le scan lidar"
+      - "scan le terrain"
+      - "commence le relevé"
+    target_type: drone
+    action: start_mission
+    mission_type: lidar_grid
+    confirm: true
+    response: "Scan LiDAR lancé"
+
+  - id: lidar_status
+    patterns:
+      - "état du lidar"
+      - "lidar status"
+      - "le lidar tourne"
+    action: query_lidar_status
+    response_template: "LiDAR {status}, {points_per_sec} points par seconde"
+
+  - id: storage_check
+    patterns:
+      - "stockage"
+      - "espace disque"
+      - "combien de place"
+    action: query_storage
+    response_template: "{free_gb} giga libres, {recording_min} minutes d'enregistrement"
+
+  # ─── Système ──────────────────────────────────────
+  - id: mute
+    patterns:
+      - "silence"
+      - "tais-toi"
+      - "mute"
+      - "coupe le son"
+    action: mute_tts
+    response: null
+
+  - id: unmute
+    patterns:
+      - "parle"
+      - "unmute"
+      - "remet le son"
+      - "réactive"
+    action: unmute_tts
+    response: "Audio réactivé"
